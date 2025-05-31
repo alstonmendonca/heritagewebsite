@@ -1,82 +1,85 @@
+// theme.js
 import { createTheme } from '@mui/material/styles';
-import '@fontsource/inter';
 
 const theme = createTheme({
   palette: {
     mode: 'light',
+    background: {
+      default: '#ffffff', // pure white background
+      paper: '#f8f8f8',   // light gray for cards/panels
+    },
     primary: {
-      main: '#922b7b',    // Magenta
-      dark: '#4a2971',    // Royal Purple
+      main: '#000000',    // black primary
+      light: '#4f4f4f',   // dark gray as hover/focus variant
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#4d5f99',    // Soft Navy
-      light: '#5bb8b2',   // Teal
+      main: '#444444',    // dark neutral gray
       contrastText: '#ffffff',
     },
+    error: {
+      main: '#d32f2f',    // standard Material red
+    },
     success: {
-      main: '#50aa43',    // Fresh Green
+      main: '#388e3c',    // standard green
     },
     warning: {
-      main: '#96c040',    // Lime
-    },
-    error: {
-      main: '#eb323e',    // Vivid Red
+      main: '#fbc02d',    // amber
     },
     info: {
-      main: '#c03182',    // Fuchsia
-    },
-    background: {
-      default: '#f9fafe', // Clean white-ish
-      paper: '#ffffff',
+      main: '#1976d2',    // standard blue
     },
     text: {
-      primary: '#1e1e1e',
-      secondary: '#5f6368',
+      primary: '#000000', // black text
+      secondary: '#555555', // medium gray for secondary text
     },
+    divider: '#e0e0e0',   // soft divider line
   },
+
   typography: {
-    fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
-    h4: {
+    fontFamily: "'Inter', sans-serif",
+    fontSize: 15,
+    fontWeightRegular: 400,
+    fontWeightMedium: 600,
+    fontWeightBold: 700,
+    h1: {
+      fontSize: '2rem',
       fontWeight: 700,
-      marginBottom: '1rem',
+      color: '#000000',
     },
-    h5: {
+    h2: {
+      fontSize: '1.5rem',
       fontWeight: 600,
-      color: '#922b7b',
+      color: '#222222',
     },
     body1: {
-      fontSize: '1rem',
+      fontSize: '1.125rem',
       lineHeight: 1.6,
+      color: '#000000',
+    },
+    body2: {
+      fontSize: '1rem',
+      lineHeight: 1.5,
+      color: '#444444',
+    },
+    caption: {
+      fontSize: '0.85rem',
+      color: '#888888',
     },
   },
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: {
-        body: {
-          backgroundColor: '#f9fafe',
-          minHeight: '100vh',
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-          boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          textTransform: 'none',
-          fontWeight: 600,
-        },
-      },
-    },
+
+  spacing: 8,
+
+  shape: {
+    borderRadius: 12,
   },
+
+  shadows: [
+    'none',
+    '0 2px 6px rgba(0,0,0,0.1)',   // soft black shadows
+    '0 6px 12px rgba(0,0,0,0.12)',
+    '0 12px 24px rgba(0,0,0,0.16)',
+  ],
 });
 
 export default theme;
