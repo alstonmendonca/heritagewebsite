@@ -1,5 +1,9 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from 'react-router-dom';
 import { ThemeProvider, CssBaseline, Container } from '@mui/material';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -21,7 +25,13 @@ function App() {
       <CssBaseline />
       <Router>
         <Navbar />
-        <Container maxWidth="xl" sx={{ py: 4 }}>
+
+        {/* Full-bleed container with no horizontal or vertical padding */}
+        <Container
+          maxWidth={false}
+          disableGutters
+          sx={{ py: 0 }}
+        >
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<AboutUs />} />
@@ -33,6 +43,7 @@ function App() {
             <Route path="/photo-gallery" element={<PhotoGallery />} />
           </Routes>
         </Container>
+
         <Footer />
       </Router>
     </ThemeProvider>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   AppBar,
@@ -17,13 +17,22 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const theme = useTheme();
   const location = useLocation();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navItems = [
     { name: 'About Us', path: '/about' },
@@ -57,92 +66,93 @@ const Navbar = () => {
   return (
     <>
       <AppBar
-        position="sticky"
+        position="fixed"
         elevation={0}
         sx={{
-          bgcolor: 'background.paper',
-          borderBottom: `1px solid ${theme.palette.divider}`,
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
+          bgcolor: scrolled ? 'rgba(255, 255, 255, 0.8)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(8px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(8px)' : 'none',
+          borderBottom: scrolled ? `1px solid rgba(0, 0, 0, 0.08)` : 'none',
+          transition: 'all 0.3s ease-out',
+          py: 1,
         }}
       >
         <Container maxWidth="xl">
-          <Toolbar
-            disableGutters
-            sx={{
-              py: 1,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
+          <Toolbar disableGutters>
             {/* Logo */}
             <Typography
               component={Link}
               to="/"
               variant="h6"
+              noWrap
               sx={{
-                color: 'primary.main',
+                color: scrolled ? 'text.primary' : 'common.white',
                 fontWeight: 800,
                 textDecoration: 'none',
                 letterSpacing: '-0.5px',
-                fontSize: { xs: '1.1rem', sm: '1.25rem' },
-                ml: 2,
+                fontSize: { xs: '1.1rem', sm: '1.5rem' },
+                mr: 2,
+                transition: 'color 0.3s ease-out',
                 '&:hover': {
-                  color: 'primary.dark',
+                  color: scrolled ? 'primary.main' : 'rgba(255, 255, 255, 0.9)',
                 },
               }}
             >
-              Heritage Safety
+              Heritage
             </Typography>
 
-            {/* Desktop Nav */}
+            {/* Desktop Navigation */}
             {!isMobile && (
               <Box
                 component={motion.div}
                 initial="hidden"
                 animate="visible"
                 variants={navVariants}
-                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  flexGrow: 1,
+                  justifyContent: 'center',
+                  gap: 1,
+                }}
               >
                 {navItems.map((item) => (
                   <motion.div
                     key={item.name}
                     variants={itemVariants}
                     whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     <Button
                       component={Link}
                       to={item.path}
-                      size="small"
+                      size="medium"
                       sx={{
                         position: 'relative',
                         px: 2,
                         py: 1,
                         borderRadius: 2,
-                        color:
-                          location.pathname === item.path
-                            ? 'primary.main'
-                            : 'text.secondary',
-                        fontWeight: location.pathname === item.path ? 650 : 500,
-                        transition: 'all 0.3s ease',
+                        color: location.pathname === item.path
+                          ? scrolled ? 'primary.main' : 'common.white'
+                          : scrolled ? 'text.secondary' : 'rgba(255, 255, 255, 0.8)',
+                        fontWeight: location.pathname === item.path ? 700 : 500,
+                        transition: 'all 0.2s ease-out',
                         '&:hover': {
-                          color: 'primary.main',
-                          backgroundColor:
-                            theme.palette.mode === 'light'
-                              ? 'rgba(25, 118, 210, 0.05)'
-                              : 'rgba(100, 181, 246, 0.1)',
+                          color: scrolled ? 'primary.main' : 'common.white',
+                          backgroundColor: scrolled 
+                            ? 'rgba(25, 118, 210, 0.05)'
+                            : 'rgba(255, 255, 255, 0.1)',
                         },
                         ...(location.pathname === item.path && {
                           '&::after': {
                             content: '""',
                             position: 'absolute',
-                            bottom: -2,
+                            bottom: -4,
                             left: '50%',
                             transform: 'translateX(-50%)',
                             width: '60%',
                             height: 2,
-                            backgroundColor: 'primary.main',
+                            backgroundColor: scrolled ? 'primary.main' : 'common.white',
                             borderRadius: 1,
                           },
                         }),
@@ -152,35 +162,48 @@ const Navbar = () => {
                     </Button>
                   </motion.div>
                 ))}
-
-                <motion.div variants={itemVariants}>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{
-                      ml: 2,
-                      fontWeight: 600,
-                      borderRadius: 2,
-                      boxShadow: 'none',
-                      '&:hover': {
-                        boxShadow: '0 4px 10px rgba(25, 118, 210, 0.2)',
-                      },
-                    }}
-                  >
-                    Contact
-                  </Button>
-                </motion.div>
               </Box>
             )}
 
-            {/* Mobile Menu Icon */}
+            {/* Contact Button - Right Aligned */}
+            {!isMobile && (
+              <motion.div
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
+                sx={{ ml: 'auto' }}
+              >
+                <Button
+                  variant={scrolled ? "contained" : "outlined"}
+                  size="medium"
+                  color={scrolled ? "primary" : "inherit"}
+                  sx={{
+                    fontWeight: 600,
+                    borderRadius: 2,
+                    px: 3,
+                    color: scrolled ? undefined : 'common.white',
+                    borderColor: scrolled ? undefined : 'rgba(255, 255, 255, 0.5)',
+                    '&:hover': {
+                      borderColor: scrolled ? undefined : 'common.white',
+                      backgroundColor: scrolled ? undefined : 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  Contact
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Mobile Menu Button */}
             {isMobile && (
               <IconButton
                 edge="end"
                 onClick={() => setDrawerOpen(true)}
-                sx={{ mr: 2 }}
+                sx={{ 
+                  ml: 'auto',
+                  color: scrolled ? 'text.primary' : 'common.white',
+                }}
               >
-                <MenuIcon />
+                <MenuIcon fontSize="medium" />
               </IconButton>
             )}
           </Toolbar>
@@ -194,48 +217,75 @@ const Navbar = () => {
         onClose={() => setDrawerOpen(false)}
         PaperProps={{
           sx: {
-            width: 250,
+            width: { xs: '100%', sm: 300 },
             bgcolor: 'background.default',
             p: 2,
           },
         }}
       >
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
-          Heritage Safety
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            Heritage
+          </Typography>
+          <IconButton onClick={() => setDrawerOpen(false)}>
+            <MenuIcon />
+          </IconButton>
+        </Box>
+        
         <Divider />
-        <List>
-          {navItems.map((item) => (
-            <ListItem
-              button
-              key={item.name}
-              component={Link}
-              to={item.path}
-              onClick={() => setDrawerOpen(false)}
-              selected={location.pathname === item.path}
-              sx={{
-                borderRadius: 1,
-                '&.Mui-selected': {
-                  backgroundColor: 'primary.light',
-                  color: 'primary.main',
-                },
-              }}
-            >
-              <ListItemText primary={item.name} />
-            </ListItem>
-          ))}
+        
+        <List sx={{ py: 2 }}>
+          <AnimatePresence>
+            {navItems.map((item, index) => (
+              <motion.div
+                key={item.name}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <ListItem
+                  button
+                  component={Link}
+                  to={item.path}
+                  onClick={() => setDrawerOpen(false)}
+                  selected={location.pathname === item.path}
+                  sx={{
+                    borderRadius: 1,
+                    mb: 0.5,
+                    '&.Mui-selected': {
+                      backgroundColor: 'primary.light',
+                      color: 'primary.main',
+                      '&:hover': {
+                        backgroundColor: 'primary.light',
+                      },
+                    },
+                  }}
+                >
+                  <ListItemText 
+                    primary={item.name} 
+                    primaryTypographyProps={{ fontWeight: 600 }}
+                  />
+                </ListItem>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </List>
-        <Button
-          variant="contained"
-          fullWidth
-          sx={{
-            mt: 3,
-            fontWeight: 600,
-            borderRadius: 2,
-          }}
-        >
-          Contact
-        </Button>
+        
+        <Box sx={{ px: 2, mt: 'auto' }}>
+          <Button
+            variant="contained"
+            fullWidth
+            size="large"
+            sx={{
+              fontWeight: 600,
+              borderRadius: 2,
+              py: 1.5,
+              mb: 2,
+            }}
+          >
+            Contact Us
+          </Button>
+        </Box>
       </Drawer>
     </>
   );
