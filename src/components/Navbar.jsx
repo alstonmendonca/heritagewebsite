@@ -34,6 +34,50 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Check if current page is home
+  const isHomePage = location.pathname === '/';
+
+  // Navbar styles based on page and scroll state
+  const getNavbarStyles = () => {
+    if (!isHomePage) {
+      // For all non-home pages - always translucent
+      return {
+        bgcolor: 'rgba(255, 255, 255, 0.8)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+        color: 'text.primary'
+      };
+    }
+    
+    // For home page - depends on scroll state
+    return {
+      bgcolor: scrolled ? 'rgba(255, 255, 255, 0.8)' : 'transparent',
+      backdropFilter: scrolled ? 'blur(8px)' : 'none',
+      WebkitBackdropFilter: scrolled ? 'blur(8px)' : 'none',
+      borderBottom: scrolled ? '1px solid rgba(0, 0, 0, 0.08)' : 'none',
+      color: scrolled ? 'text.primary' : 'common.white'
+    };
+  };
+
+  const navbarStyles = getNavbarStyles();
+
+  // Text and button colors based on page
+  const getTextColor = () => {
+    if (!isHomePage) return 'text.primary';
+    return scrolled ? 'text.primary' : 'common.white';
+  };
+
+  const getButtonVariant = () => {
+    if (!isHomePage) return 'contained';
+    return scrolled ? 'contained' : 'outlined';
+  };
+
+  const getButtonColor = () => {
+    if (!isHomePage) return 'primary';
+    return scrolled ? 'primary' : 'inherit';
+  };
+
   const navItems = [
     { name: 'About Us', path: '/about' },
     { name: 'Training', path: '/training' },
@@ -69,10 +113,7 @@ const Navbar = () => {
         position="fixed"
         elevation={0}
         sx={{
-          bgcolor: scrolled ? 'rgba(255, 255, 255, 0.8)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(8px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(8px)' : 'none',
-          borderBottom: scrolled ? `1px solid rgba(0, 0, 0, 0.08)` : 'none',
+          ...navbarStyles,
           transition: 'all 0.3s ease-out',
           py: 1,
         }}
@@ -86,7 +127,7 @@ const Navbar = () => {
               variant="h6"
               noWrap
               sx={{
-                color: scrolled ? 'text.primary' : 'common.white',
+                color: getTextColor(),
                 fontWeight: 800,
                 textDecoration: 'none',
                 letterSpacing: '-0.5px',
@@ -94,7 +135,7 @@ const Navbar = () => {
                 mr: 2,
                 transition: 'color 0.3s ease-out',
                 '&:hover': {
-                  color: scrolled ? 'primary.main' : 'rgba(255, 255, 255, 0.9)',
+                  color: 'primary.main',
                 },
               }}
             >
@@ -133,13 +174,13 @@ const Navbar = () => {
                         py: 1,
                         borderRadius: 2,
                         color: location.pathname === item.path
-                          ? scrolled ? 'primary.main' : 'common.white'
-                          : scrolled ? 'text.secondary' : 'rgba(255, 255, 255, 0.8)',
+                          ? 'primary.main'
+                          : getTextColor(),
                         fontWeight: location.pathname === item.path ? 700 : 500,
                         transition: 'all 0.2s ease-out',
                         '&:hover': {
-                          color: scrolled ? 'primary.main' : 'common.white',
-                          backgroundColor: scrolled 
+                          color: 'primary.main',
+                          backgroundColor: !isHomePage || scrolled 
                             ? 'rgba(25, 118, 210, 0.05)'
                             : 'rgba(255, 255, 255, 0.1)',
                         },
@@ -152,7 +193,7 @@ const Navbar = () => {
                             transform: 'translateX(-50%)',
                             width: '60%',
                             height: 2,
-                            backgroundColor: scrolled ? 'primary.main' : 'common.white',
+                            backgroundColor: 'primary.main',
                             borderRadius: 1,
                           },
                         }),
@@ -173,18 +214,18 @@ const Navbar = () => {
                 sx={{ ml: 'auto' }}
               >
                 <Button
-                  variant={scrolled ? "contained" : "outlined"}
+                  variant={getButtonVariant()}
                   size="medium"
-                  color={scrolled ? "primary" : "inherit"}
+                  color={getButtonColor()}
                   sx={{
                     fontWeight: 600,
                     borderRadius: 2,
                     px: 3,
-                    color: scrolled ? undefined : 'common.white',
-                    borderColor: scrolled ? undefined : 'rgba(255, 255, 255, 0.5)',
+                    color: !isHomePage || scrolled ? undefined : 'common.white',
+                    borderColor: !isHomePage || scrolled ? undefined : 'rgba(255, 255, 255, 0.5)',
                     '&:hover': {
-                      borderColor: scrolled ? undefined : 'common.white',
-                      backgroundColor: scrolled ? undefined : 'rgba(255, 255, 255, 0.1)',
+                      borderColor: !isHomePage || scrolled ? undefined : 'common.white',
+                      backgroundColor: !isHomePage || scrolled ? undefined : 'rgba(255, 255, 255, 0.1)',
                     },
                   }}
                 >
@@ -200,7 +241,7 @@ const Navbar = () => {
                 onClick={() => setDrawerOpen(true)}
                 sx={{ 
                   ml: 'auto',
-                  color: scrolled ? 'text.primary' : 'common.white',
+                  color: getTextColor(),
                 }}
               >
                 <MenuIcon fontSize="medium" />
